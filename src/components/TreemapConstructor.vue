@@ -86,6 +86,10 @@ export default {
     },
 
     selectFilter: function (dimension) {
+      if (this.config.filters.hasOwnProperty(dimension['label'])) {
+        this.$delete(this.config.filters, dimension['label'])
+        return
+      }
       var newFilter = {}
       newFilter['name'] = dimension['key_ref']
       newFilter['label_ref'] = dimension['label_ref']
