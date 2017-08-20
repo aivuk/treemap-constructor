@@ -11,11 +11,15 @@
       <div class="config" v-if="hasModel">
         <div class="hierarchies">
           <h1>Hierarchies</h1>
-          <a class="button" v-for="hierarchy in this.model.hierarchies" @click="selectHierarchy(hierarchy)">{{hierarchy['label']}}</a>
+          <a class="button" v-for="hierarchy in this.model.hierarchies"  :class="{'is-primary': hasHierarchy(hierarchy)}" @click="selectHierarchy(hierarchy)">{{hierarchy['label']}}</a>
         </div>
         <div class="measures">
           <h1>Aggregates</h1>
           <a class="button" @click="selectMeasure(aggregate)" :class="{'is-primary': aggregate['ref'] === config['value']}" v-for="aggregate in this.model.aggregates" v-if="aggregate['function'] == 'sum'">{{aggregate['label']}}</a>
+        </div>
+        <div class="filters">
+          <h1>Filters</h1>
+          <a class="button" @click="selectFilter(dimension)" :class="{'is-primary': hasFilter(dimension)}" v-for="dimension in this.model.dimensions">{{dimension['label']}}</a>
         </div>
       </div>
     </div>
@@ -48,23 +52,67 @@ export default {
     emptyConfig: function () {
       return Object.keys(this.config).length === 0
     },
+
     selectHierarchy: function (hierarchy) {
-      var hasHierarchy = this.config['hierarchies'].find(h => h['label'] === hierarchy['label'])
-      if (!hasHierarchy) {
+      var hasHierarchy = this.config['hierarchies'].findIndex(h => h['label'] === hierarchy['label'])
+      if (hasHierarchy === -1) {
         this.config['hierarchies'].push({
           'datapackageHierarchy': hierarchy['ref'],
           'url': hierarchy['ref'],
           'label': hierarchy['label']
         })
+      } else {
+        if (this.config['hierarchies'].length === 1) {
+          this.showTreemap = false
+        }
+        this.config['hierarchies'].splice(hasHierarchy, 1)
       }
 
-      console.log(this.config, JSON.stringify(this.config, null, 2))
       this.showTreemap = true
     },
+
+    hasHierarchy: function (hierarchy) {
+      var hasHierarchy = this.config['hierarchies'].findIndex(h => h['label'] === hierarchy['label'])
+      return (hasHierarchy > -1)
+    },
+
+    hasFilter: function (filter) {
+      var hasFilter = this.config['filters'].hasOwnProperty(filter['label'])
+      return hasFilter
+    },
+
     selectMeasure: function (measure) {
       this.config['value'] = measure['ref']
-      console.log(this.config, JSON.stringify(this.config, null, 2))
     },
+
+    selectFilter: function (dimension) {
+      var newFilter = {}
+      newFilter['name'] = dimension['key_ref']
+      newFilter['label_ref'] = dimension['label_ref']
+      newFilter['ref'] = dimension['ref']
+      newFilter['type'] = dimension.attributes[dimension['key_attribute']].datatype
+      newFilter['default'] = false
+      newFilter['defaultLabel'] = 'All'
+      newFilter['label'] = dimension.attributes[dimension['label_attribute']].label
+      newFilter['values'] = []
+
+      var apiRequestUrl = `${this.apiurl}${this.datapackage}/members/${newFilter['ref']}/`
+      axios.get(apiRequestUrl).then(response => {
+        var responseData = response.data.data
+        for (var i in responseData) {
+          var newOption = {
+            'value': responseData[i][newFilter['name']],
+            'label': responseData[i][newFilter['label_ref']]
+          }
+          newFilter['values'].push(newOption)
+        }
+
+        this.$set(this.config.filters, dimension['label'], newFilter)
+      }).catch(e => {
+        console.log(e)
+      })
+    },
+
     getModel: function () {
       if (this.datapackage) {
         var apiRequestUrl = `${this.apiurl}${this.datapackage}/model/`
@@ -111,6 +159,11 @@ li {
 
 a {
   color: #42b983;
+}
+
+.datapackage {
+  background-color: rgb(237, 237, 237);
+  padding: 50px;
 }
 
 #treemap {
