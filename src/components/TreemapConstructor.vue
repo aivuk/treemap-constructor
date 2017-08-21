@@ -26,7 +26,18 @@
         </div>
         <div class="filters config-group">
           <h2 class="title">Filters</h2>
+          <div class="filters-buttons">
           <a class="button" @click="selectFilter(dimension)" :class="{'is-primary': hasFilter(dimension)}" v-for="dimension in this.model.dimensions">{{dimension['label']}}</a>
+          </div>
+          <div class="columns">
+            <div class="column is-success" v-for="filter in this.config.filters">
+              <h1>{{filter.label}}</h1>
+              <div>Label: <b-input v-model="filter.label"></b-input></div>
+              Has default: {{filter.default}}
+
+
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -191,6 +202,19 @@ a {
 
 .config-group {
   padding: 10px 0;
+}
+
+.columns {
+  margin-top: 10px;
+  justify-content: center;
+}
+.column {
+  h1 {
+    font-weight: bold;
+  }
+
+  max-width: 15%;
+   background-color: rgb(141, 188, 188);
 }
 
 #treemap {
