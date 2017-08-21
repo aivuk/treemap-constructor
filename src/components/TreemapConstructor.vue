@@ -1,5 +1,12 @@
 <template>
   <div class="treemap-constructor">
+    <section class="hero">
+      <div class="hero-body">
+        <div class="container">
+          <h1 class="title"> Treemap constructor </h1>
+        </div>
+      </div>
+    </section>
     <div class="datapackage">
       <div class="datapackage-loader container">
         <b-field label="Datapackage">
@@ -9,16 +16,16 @@
         </b-field>
       </div>
       <div class="config" v-if="hasModel">
-        <div class="hierarchies">
-          <h1>Hierarchies</h1>
+        <div class="hierarchies config-group">
+          <h2 class="title">Hierarchies</h2>
           <a class="button" v-for="hierarchy in this.model.hierarchies"  :class="{'is-primary': hasHierarchy(hierarchy)}" @click="selectHierarchy(hierarchy)">{{hierarchy['label']}}</a>
         </div>
-        <div class="measures">
-          <h1>Aggregates</h1>
+        <div class="measures config-group">
+          <h2 class="title">Aggregates</h2>
           <a class="button" @click="selectMeasure(aggregate)" :class="{'is-primary': aggregate['ref'] === config['value']}" v-for="aggregate in this.model.aggregates" v-if="aggregate['function'] == 'sum'">{{aggregate['label']}}</a>
         </div>
-        <div class="filters">
-          <h1>Filters</h1>
+        <div class="filters config-group">
+          <h2 class="title">Filters</h2>
           <a class="button" @click="selectFilter(dimension)" :class="{'is-primary': hasFilter(dimension)}" v-for="dimension in this.model.dimensions">{{dimension['label']}}</a>
         </div>
       </div>
@@ -146,7 +153,7 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style>
+<style lang="scss">
 h1, h2 {
   font-weight: normal;
 }
@@ -168,9 +175,26 @@ a {
 .datapackage {
   background-color: rgb(237, 237, 237);
   padding: 50px;
+
+  .datapackage-loader.container {
+    .field.has-addons {
+       justify-content: center;
+       padding-bottom: 30px;
+
+       label {
+          padding: 5px;
+       }
+    }
+  }
+
+}
+
+.config-group {
+  padding: 10px 0;
 }
 
 #treemap {
    width: 1200px;
+
 }
 </style>
