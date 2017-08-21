@@ -10,7 +10,7 @@
     <div class="datapackage">
       <div class="datapackage-loader container">
         <b-field label="Datapackage">
-          <b-input v-model="datapackage">
+          <b-input class="datapackageHash" v-model="datapackage">
           </b-input>
           <a class="button" @click="getModel()">Load datapackage</a>
         </b-field>
@@ -33,12 +33,19 @@
             <div class="column is-success" v-for="filter in this.config.filters">
               <h1>{{filter.label}}</h1>
               <div>Label: <b-input v-model="filter.label"></b-input></div>
-              Has default: {{filter.default}}
-
-
+              <div>Has default: <b-switch v-model="filter.default"></b-switch></div>
+              <div v-if="filter.default">
+                <b-select class="btn btn-default dropdown-toggle"  v-model="filter.defaultValue">
+                  <option :value="filterValue.value" v-bind:key="filterValue.label" v-for="filterValue in filter.values">{{filterValue.label}}</option>
+                </b-select>
+              </div>
             </div>
           </div>
         </div>
+      <section class="config">
+        <button class="button is-medium is-primary" @click="showConfig">Show config</button>
+      </section>
+
       </div>
     </div>
     <div class="treemap-preview" v-if="showTreemap">
@@ -97,6 +104,12 @@ export default {
     hasFilter: function (filter) {
       var hasFilter = this.config['filters'].hasOwnProperty(filter['label'])
       return hasFilter
+    },
+
+    showConfig: function () {
+      this.$dialog.alert({
+        message: '<pre>' + JSON.stringify(this.config, null, 2) + '</pre>'
+      })
     },
 
     selectMeasure: function (measure) {
@@ -200,6 +213,10 @@ a {
 
 }
 
+.config {
+  margin-top: 10px;
+}
+
 .config-group {
   padding: 10px 0;
 }
@@ -215,6 +232,14 @@ a {
 
   max-width: 15%;
    background-color: rgb(141, 188, 188);
+}
+
+.datapackageHash {
+  min-width: 600px;
+}
+
+.dialog .modal-card {
+  max-width: none;
 }
 
 #treemap {
