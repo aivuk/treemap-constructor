@@ -22,7 +22,18 @@
         </div>
         <div class="measures config-group">
           <h2 class="title">Aggregates</h2>
-          <a class="button" @click="selectMeasure(aggregate)" :class="{'is-primary': aggregate['ref'] === config['value']}" v-for="aggregate in this.model.aggregates" v-if="aggregate['function'] == 'sum'">{{aggregate['label']}}</a>
+          <a class="button" @click="selectMeasure(aggregate)" :class="{'is-primary': aggregate['ref'] === config['value'][0]['field']}" v-for="aggregate in this.model.aggregates" v-if="aggregate['function'] == 'sum'">{{aggregate['label']}}</a>
+          <div class="columns">
+            <div class="column is-success" v-for="value in this.config.value">
+              <h1>{{value.field}}</h1>
+              <div>Label: <b-input v-model="value.label"></b-input></div>
+              <div>Symbol: <b-input v-model="value.formatOptions.symbol"></b-input></div>
+              <div>Decimal: <b-input v-model="value.formatOptions.decimal"></b-input></div>
+              <div>Thousand: <b-input v-model="value.formatOptions.thousand"></b-input></div>
+              <div>Precision: <b-input v-model="value.formatOptions.precision"></b-input></div>
+              <div>Format: <b-input v-model="value.formatOptions.format"></b-input></div>
+            </div>
+          </div>
         </div>
         <div class="filters config-group">
           <h2 class="title">Filters</h2>
@@ -68,9 +79,10 @@ export default {
       datapackage: 'a6a16b964a7e784f99adecc47f26318a:berlin_16_17_clean',
       hasModel: false,
       showTreemap: false,
-      config: {'hierarchies': [], 'value': '', 'filters': {}},
+      config: {'hierarchies': [], 'value': [], 'filters': {}},
       model: {},
-      update: false
+      update: false,
+      formatOptionsDefault: { 'symbol': '$', 'decimal': '.', 'thousand': ',', 'precision': 2, format: '%s%v' }
     }
   },
   methods: {
@@ -113,7 +125,7 @@ export default {
     },
 
     selectMeasure: function (measure) {
-      this.config['value'] = measure['ref']
+      this.config['value'].push({ 'field': measure['ref'], 'formatOptions': this.formatOptionsDefault, 'label': measure['label'] })
     },
 
     selectFilter: function (dimension) {
@@ -161,13 +173,14 @@ export default {
           for (var i in aggregateKeys) {
             var key = aggregateKeys[i]
             if (this.model.aggregates[key]['function'] === 'sum') {
-              sumAggregate = this.model.aggregates[key]['ref']
+              sumAggregate = this.model.aggregates[key]
               break
             }
           }
 
           if (sumAggregate) {
-            this.config['value'] = sumAggregate
+            this.$set(this.config, 'value', [])
+            this.config['value'].push({ 'field': sumAggregate['ref'], 'formatOptions': this.formatOptionsDefault, 'label': sumAggregate['label'] })
           }
         })
       }
