@@ -16,46 +16,54 @@
         </b-field>
       </div>
       <div class="config" v-if="hasModel">
-        <div class="hierarchies config-group">
-          <h2 class="title">Hierarchies</h2>
-          <a class="button" v-for="hierarchy in this.model.hierarchies"  :class="{'is-primary': hasHierarchy(hierarchy)}" @click="selectHierarchy(hierarchy)">{{hierarchy['label']}}</a>
-        </div>
-        <div class="measures config-group">
-          <h2 class="title">Aggregates</h2>
-          <a class="button" @click="selectMeasure(aggregate)" :class="{'is-primary': aggregate['ref'] === config['value'][0]['field']}" v-for="aggregate in this.model.aggregates" v-if="aggregate['function'] == 'sum'">{{aggregate['label']}}</a>
-          <div class="columns">
-            <div class="column is-success" v-for="value in this.config.value">
-              <h1>{{value.field}}</h1>
-              <div>Label: <b-input v-model="value.label"></b-input></div>
-              <div>Symbol: <b-input v-model="value.formatOptions.symbol"></b-input></div>
-              <div>Decimal: <b-input v-model="value.formatOptions.decimal"></b-input></div>
-              <div>Thousand: <b-input v-model="value.formatOptions.thousand"></b-input></div>
-              <div>Precision: <b-input v-model="value.formatOptions.precision"></b-input></div>
-              <div>Format: <b-input v-model="value.formatOptions.format"></b-input></div>
-            </div>
-          </div>
-        </div>
-        <div class="filters config-group">
-          <h2 class="title">Filters</h2>
-          <div class="filters-buttons">
-          <a class="button" @click="selectFilter(dimension)" :class="{'is-primary': hasFilter(dimension)}" v-for="dimension in this.model.dimensions">{{dimension['label']}}</a>
-          </div>
-          <div class="columns">
-            <div class="column is-success" v-for="filter in this.config.filters">
-              <h1>{{filter.label}}</h1>
-              <div>Label: <b-input v-model="filter.label"></b-input></div>
-              <div>Has default: <b-switch v-model="filter.default"></b-switch></div>
-              <div v-if="filter.default">
-                <b-select class="btn btn-default dropdown-toggle"  v-model="filter.defaultValue">
-                  <option :value="filterValue.value" v-bind:key="filterValue.label" v-for="filterValue in filter.values">{{filterValue.label}}</option>
-                </b-select>
+        <b-tabs v-model="activeTab">
+          <b-tab-item label="Hierarchies" class="hierarchies config-group">
+            <a class="button" v-for="hierarchy in this.model.hierarchies"  :class="{'is-primary': hasHierarchy(hierarchy)}" @click="selectHierarchy(hierarchy)">{{hierarchy['label']}}</a>
+          </b-tab-item>
+          <b-tab-item label="Measures" class="measures config-group">
+            <div class="content">
+              <a class="button" @click="selectMeasure(aggregate)" :class="{'is-primary': aggregate['ref'] === config['value'][0]['field']}" v-for="aggregate in this.model.aggregates" v-if="aggregate['function'] == 'sum'">{{aggregate['label']}}</a>
+              <div class="columns">
+                <div class="column" v-for="value in this.config.value">
+                  <h1>{{value.field}}</h1>
+                  <div><b-field label="Label:"><b-input v-model="value.label"></b-input></b-field></div>
+                  <div class="number-format">
+                    <b-input class="symbol" v-model="value.formatOptions.symbol"></b-input>
+                    <span class="num">1</span>
+                    <b-input class="sep" v-model="value.formatOptions.thousand"></b-input>
+                    <span class="num">000</span>
+                    <b-input class="sep" v-model="value.formatOptions.decimal"></b-input>
+                    <span class="num">00</span>
+                  </div>
+                  <div><b-field label="Precision:"><b-input v-model="value.formatOptions.precision"></b-input></b-field></div>
+                  <div><b-field label="Format:"><b-input v-model="value.formatOptions.format"></b-input></b-field></div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-      <section class="config">
+          </b-tab-item>
+          <b-tab-item label="Filters" class="filters config-group">
+            <div class="content">
+              <div class="filters-buttons">
+              <a class="button" @click="selectFilter(dimension)" :class="{'is-primary': hasFilter(dimension)}" v-for="dimension in this.model.dimensions">{{dimension['label']}}</a>
+              </div>
+              <div class="columns">
+                <div class="column" v-for="filter in this.config.filters">
+                  <h1>{{filter.label}}</h1>
+                  <div>Label: <b-input v-model="filter.label"></b-input></div>
+                  <div>Has default: <b-switch v-model="filter.default"></b-switch></div>
+                  <div v-if="filter.default">
+                    <b-select class="btn btn-default dropdown-toggle"  v-model="filter.defaultValue">
+                      <option :value="filterValue.value" v-bind:key="filterValue.label" v-for="filterValue in filter.values">{{filterValue.label}}</option>
+                    </b-select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </b-tab-item>
+        </b-tabs>
+      <div class="content export">
         <button class="button is-medium is-primary" @click="showConfig">Show config</button>
-      </section>
+      </div>
 
       </div>
     </div>
@@ -82,7 +90,8 @@ export default {
       config: {'hierarchies': [], 'value': [], 'filters': {}},
       model: {},
       update: false,
-      formatOptionsDefault: { 'symbol': '$', 'decimal': '.', 'thousand': ',', 'precision': 2, format: '%s%v' }
+      formatOptionsDefault: { 'symbol': '$', 'decimal': '.', 'thousand': ',', 'precision': 2, format: '%s %v' },
+      activeTab: 0
     }
   },
   methods: {
@@ -210,28 +219,43 @@ a {
 }
 
 .datapackage {
-  background-color: rgb(237, 237, 237);
-  padding: 50px;
+  background-color: #f6f6f6;
+  padding: 20px;
 
   .datapackage-loader.container {
     .field.has-addons {
-       justify-content: center;
-       padding-bottom: 30px;
+      justify-content: center;
+      padding-bottom: 30px;
 
-       label {
-          padding: 5px;
-       }
+      label {
+         padding: 5px;
+      }
+
+      .datapackageHash {
+
+        input {
+          min-width: 600px;
+        }
+
+      }
     }
   }
 
+  .config {
+    .b-tabs {
+      max-width: 60%;
+      margin: auto;
+    }
+   }
+
 }
 
-.config {
-  margin-top: 10px;
+.content {
+  width: 100%;
 }
 
-.config-group {
-  padding: 10px 0;
+.panel:not(:last-child) {
+  margin-bottom: 0;
 }
 
 .columns {
@@ -243,12 +267,7 @@ a {
     font-weight: bold;
   }
 
-  max-width: 15%;
-   background-color: rgb(141, 188, 188);
-}
-
-.datapackageHash {
-  min-width: 600px;
+  max-width: 25%;
 }
 
 .dialog .modal-card {
@@ -258,5 +277,35 @@ a {
 #treemap {
    width: 1200px;
 
+}
+
+.number-format {
+  .control {
+    float: left;
+    input {
+      border: 0;
+      background-color: rgba(0,0,0,0.1);
+    }
+  }
+  .symbol {
+    width: 8ch;
+  }
+  .sep {
+     width: 3ch;
+  }
+  .num {
+     float: left;
+     font-size: 25px;
+  }
+
+  &::after {
+    clear: both;
+    content: '';
+    display: block;
+  }
+}
+
+.export {
+   padding-top: 20px;
 }
 </style>
