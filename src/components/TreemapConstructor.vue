@@ -47,15 +47,13 @@
               <a class="button" @click="selectFilter(dimension)" :class="{'is-primary': hasFilter(dimension)}" v-for="dimension in this.model.dimensions">{{dimension['label']}}</a>
               </div>
               <div class="columns">
-                <div class="column" v-for="filter in this.config.filters">
+                <div class="column" v-for="(filter, filterName) in config.filters">
                   <h1>{{filter.label}}</h1>
                   <div>Label: <b-input v-model="filter.label"></b-input></div>
                   <div>Has default: <b-switch v-model="filter.default"></b-switch></div>
-                  <div v-if="filter.default">
-                    <b-select class="btn btn-default dropdown-toggle"  v-model="filter.defaultValue">
-                      <option :value="filterValue.value" v-bind:key="filterValue.label" v-for="filterValue in filter.values">{{filterValue.label}}</option>
-                    </b-select>
-                  </div>
+                  <b-select class="btn btn-default dropdown-toggle" v-model="filter.defaultValue">
+                    <option :value="filterValue.value" :key="filterValue.value" v-for="filterValue in filter.values">{{filterValue.label}}</option>
+                  </b-select>
                 </div>
               </div>
             </div>
@@ -147,7 +145,8 @@ export default {
       newFilter['label_ref'] = dimension['label_ref']
       newFilter['ref'] = dimension['ref']
       newFilter['type'] = dimension.attributes[dimension['key_attribute']].datatype
-      newFilter['default'] = false
+      newFilter['default'] = true
+      newFilter['defaultValue'] = ''
       newFilter['defaultLabel'] = 'All'
       newFilter['label'] = dimension.attributes[dimension['label_attribute']].label
       newFilter['values'] = [{'value': '', 'label': 'All'}]

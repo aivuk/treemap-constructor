@@ -4,9 +4,12 @@ import Vue from 'vue'
 import Buefy from 'buefy'
 import App from './App'
 import router from './router'
+import lodash from 'lodash'
+import VueLodash from 'vue-lodash/dist/vue-lodash.min'
 
 Vue.config.productionTip = false
 Vue.use(Buefy, { defaultIconPack: 'fa' })
+Vue.use(VueLodash, lodash)
 
 /* eslint-disable no-new */
 new Vue({
