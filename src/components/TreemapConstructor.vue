@@ -150,7 +150,7 @@ export default {
       newFilter['default'] = false
       newFilter['defaultLabel'] = 'All'
       newFilter['label'] = dimension.attributes[dimension['label_attribute']].label
-      newFilter['values'] = []
+      newFilter['values'] = [{'value': '', 'label': 'All'}]
 
       var apiRequestUrl = `${this.apiurl}${this.datapackage}/members/${newFilter['ref']}/`
       axios.get(apiRequestUrl).then(response => {
