@@ -307,4 +307,9 @@ a {
 .export {
    padding-top: 20px;
 }
+
+.filters-buttons {
+   min-height: 100px;
+}
+
 </style>
