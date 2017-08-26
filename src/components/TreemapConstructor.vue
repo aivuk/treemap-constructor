@@ -50,10 +50,11 @@
                 <div class="column" v-for="(filter, filterName) in config.filters">
                   <h1>{{filter.label}}</h1>
                   <div>Label: <b-input v-model="filter.label"></b-input></div>
-                  <div>Has default: <b-switch v-model="filter.default"></b-switch></div>
-                  <b-select class="btn btn-default dropdown-toggle" v-model="filter.defaultValue">
-                    <option :value="filterValue.value" :key="filterValue.value" v-for="filterValue in filter.values">{{filterValue.label}}</option>
-                  </b-select>
+                  <b-field label="Default">
+                    <b-select class="btn btn-default dropdown-toggle" v-model="filter.defaultValue">
+                      <option :value="filterValue.value" :key="filterValue.value" v-for="filterValue in filter.values">{{filterValue.label}}</option>
+                    </b-select>
+                  </b-field>
                 </div>
               </div>
             </div>
@@ -61,6 +62,7 @@
         </b-tabs>
       <div class="content export">
         <button class="button is-medium is-primary" @click="showConfig">Show config</button>
+        <button class="button is-medium is-primary" @click="downloadConfig">Download config</button>
       </div>
 
       </div>
@@ -127,8 +129,18 @@ export default {
 
     showConfig: function () {
       this.$dialog.alert({
-        message: '<pre>' + JSON.stringify(this.config, null, 2) + '</pre>'
+        message: '<pre>' + this.configString + '</pre>'
       })
+    },
+
+    downloadConfig: function () {
+      var element = document.createElement('a')
+      element.setAttribute('href', 'data:text/plaincharset=utf-8,' + encodeURIComponent(this.configString))
+      element.setAttribute('download', 'config.json')
+      element.style.display = 'none'
+      document.body.appendChild(element)
+      element.click()
+      document.body.removeChild(element)
     },
 
     selectMeasure: function (measure) {
@@ -192,6 +204,11 @@ export default {
           }
         })
       }
+    }
+  },
+  computed: {
+    configString: function () {
+      return JSON.stringify(this.config, null, 2)
     }
   }
 }
