@@ -43,7 +43,7 @@
           </b-tab-item>
           <b-tab-item label="Measures" class="measures config-group">
             <div class="content">
-              <a class="button" @click="selectMeasure(aggregate)" :class="{'is-primary': aggregate['ref'] === config['value'][0]['field']}" v-for="aggregate in this.model.aggregates" v-if="aggregate['function'] == 'sum'">{{aggregate['label']}}</a>
+              <a class="button" @click="selectMeasure(aggregate)" :class="{'is-primary': hasMeasure(aggregate)}" v-for="aggregate in this.model.aggregates" v-if="aggregate['function'] == 'sum'">{{aggregate['label']}}</a>
               <div class="columns">
                 <div class="column" v-for="value in this.config.value">
                   <div class="card">
@@ -163,6 +163,11 @@ export default {
       return (hasHierarchy > -1)
     },
 
+    hasMeasure: function (measure) {
+      var hasMeasure = this.config['value'].findIndex(h => h['label'] === measure['label'])
+      return (hasMeasure > -1)
+    },
+
     hasFilter: function (filter) {
       var hasFilter = this.config['filters'].hasOwnProperty(filter['label'])
       return hasFilter
@@ -185,7 +190,18 @@ export default {
     },
 
     selectMeasure: function (measure) {
-      this.config['value'].push({ 'field': measure['ref'], 'formatOptions': this.formatOptionsDefault, 'label': measure['label'] })
+      var hasMeasure = this.config['value'].findIndex(h => h['label'] === measure['label'])
+      if (hasMeasure === -1) {
+        this.config['value'].push({
+          'field': measure['ref'],
+          'formatOptions': this.formatOptionsDefault,
+          'label': measure['label']
+        })
+      } else {
+        if (this.config['value'].length > 1) {
+          this.config['value'].splice(hasMeasure, 1)
+        }
+      }
     },
 
     selectFilter: function (dimension) {
