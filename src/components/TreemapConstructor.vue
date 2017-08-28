@@ -19,6 +19,17 @@
         <b-tabs v-model="activeTab">
           <b-tab-item label="Hierarchies" class="hierarchies config-group">
             <a class="button" v-for="hierarchy in this.model.hierarchies"  :class="{'is-primary': hasHierarchy(hierarchy)}" @click="selectHierarchy(hierarchy)">{{hierarchy['label']}}</a>
+              <div class="columns">
+                <div class="column" v-for="(hierarchy, hierarchyName) in config.hierarchies">
+                  <h1>{{hierarchy.label}}</h1>
+                  <b-field label="Label">
+                    <b-input v-model="hierarchy.label"></b-input>
+                  </b-field>
+                  <b-field label="URL">
+                    <b-input v-model="hierarchy.url"></b-input>
+                  </b-field>
+              </div>
+            </div>
           </b-tab-item>
           <b-tab-item label="Measures" class="measures config-group">
             <div class="content">
