@@ -74,6 +74,26 @@
                 </div>
                 </div>
               </div>
+              <div class="tile is-child">
+                <button class="button" @click="addScale()">Add scale</button>
+              <div class="columns tile is-child">
+                <div class="column" v-for="scale in config.scale">
+                  <div class="card">
+                    <div class="card-content">
+                      <b-field label="Label">
+                        <b-input v-model="scale.label"></b-input>
+                      </b-field>
+                      <b-field label="Description">
+                        <b-input v-model="scale.description"></b-input>
+                      </b-field>
+                      <b-field label="Number">
+                        <b-input v-model="scale.number"></b-input>
+                      </b-field>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              </div>
             </div>
           </b-tab-item>
           <b-tab-item label="Filters" class="filters config-group tile is-vertical is-parent">
@@ -136,7 +156,7 @@ export default {
       datapackage: 'a6a16b964a7e784f99adecc47f26318a:berlin_16_17_clean',
       hasModel: false,
       showTreemap: false,
-      config: {'hierarchies': [], 'value': [], 'filters': {}},
+      config: {'hierarchies': [], 'value': [], 'scale': [], 'filters': {}},
       model: {},
       update: false,
       formatOptionsDefault: { 'symbol': '$', 'decimal': '.', 'thousand': ',', 'precision': 2, format: '%s%v', postfix: '' },
@@ -146,6 +166,11 @@ export default {
   methods: {
     emptyConfig: function () {
       return Object.keys(this.config).length === 0
+    },
+
+    addScale: function () {
+      var newScale = {'label': '', 'number': 1, 'description': ''}
+      this.config.scale.push(newScale)
     },
 
     selectHierarchy: function (hierarchy) {
