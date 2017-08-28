@@ -16,11 +16,11 @@
         </b-field>
       </div>
       <div class="config" v-if="hasModel">
-        <b-tabs v-model="activeTab">
+        <b-tabs v-model="activeTab" type="is-boxed">
           <b-tab-item label="Hierarchies" class="hierarchies config-group tile is-vertical is-parent">
             <div class="tile is-child buttons">
               <div class="button-ui" v-for="hierarchy in this.model.hierarchies">
-                <a class="button constructor" :class="{'is-primary': hasHierarchy(hierarchy)}" @click="selectHierarchy(hierarchy)">{{hierarchy['label']}}</a>
+                <a class="button constructor" :class="{'is-info': hasHierarchy(hierarchy)}" @click="selectHierarchy(hierarchy)">{{hierarchy['label']}}</a>
               </div>
             </div>
             <div class="columns tile is-child">
@@ -47,7 +47,7 @@
             <div class="content tile is-child">
               <div class="tile buttons">
                 <div class="button-ui" v-for="aggregate in this.model.aggregates">
-                  <a class="button" @click="selectMeasure(aggregate)" :class="{'is-primary': hasMeasure(aggregate)}" v-if="aggregate['function'] == 'sum'">{{aggregate['label']}}</a>
+                  <a class="button" @click="selectMeasure(aggregate)" :class="{'is-info': hasMeasure(aggregate)}" v-if="aggregate['function'] == 'sum'">{{aggregate['label']}}</a>
                 </div>
               </div>
               <div class="columns tile is-child">
@@ -80,7 +80,7 @@
             <div class="content tile is-child">
               <div class="buttons">
                 <div class="button-ui" v-for="dimension in this.model.dimensions">
-                  <a class="button" @click="selectFilter(dimension)" :class="{'is-primary': hasFilter(dimension)}">{{dimension['label']}}</a>
+                  <a class="button" @click="selectFilter(dimension)" :class="{'is-info': hasFilter(dimension)}">{{dimension['label']}}</a>
                 </div>
               </div>
               <div class="columns">
@@ -110,8 +110,8 @@
           </b-tab-item>
         </b-tabs>
       <div class="content export">
-        <button class="button is-medium is-primary" @click="showConfig">Show config</button>
-        <button class="button is-medium is-primary" @click="downloadConfig">Download config</button>
+        <button class="button is-medium is-success" @click="showConfig">Show config</button>
+        <button class="button is-medium is-success" @click="downloadConfig">Download config</button>
       </div>
 
       </div>
@@ -384,7 +384,7 @@ a {
   }
   .num {
      float: left;
-     font-size: 25px;
+     font-size: 18px;
   }
 
   &::after {
