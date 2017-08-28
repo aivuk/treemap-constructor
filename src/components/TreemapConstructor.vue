@@ -23,13 +23,21 @@
             </div>
             <div class="columns">
               <div class="column" v-for="(hierarchy, hierarchyName) in config.hierarchies">
-                <h1>{{hierarchy.label}}</h1>
-                <b-field label="Label">
-                  <b-input v-model="hierarchy.label"></b-input>
-                </b-field>
-                <b-field label="URL">
-                  <b-input v-model="hierarchy.url"></b-input>
-                </b-field>
+                <div class="card">
+                  <div clas="card-header">
+                    <p class="card-header-title">
+                      {{hierarchy.label}}
+                    </p>
+                  </div>
+                  <div class="card-content">
+                    <b-field label="Label">
+                    <b-input v-model="hierarchy.label"></b-input>
+                    </b-field>
+                    <b-field label="URL">
+                      <b-input v-model="hierarchy.url"></b-input>
+                    </b-field>
+                  </div>
+                </div>
             </div>
             </div>
           </b-tab-item>
@@ -38,18 +46,26 @@
               <a class="button" @click="selectMeasure(aggregate)" :class="{'is-primary': aggregate['ref'] === config['value'][0]['field']}" v-for="aggregate in this.model.aggregates" v-if="aggregate['function'] == 'sum'">{{aggregate['label']}}</a>
               <div class="columns">
                 <div class="column" v-for="value in this.config.value">
-                  <h1>{{value.field}}</h1>
-                  <div><b-field label="Label:"><b-input v-model="value.label"></b-input></b-field></div>
+                  <div class="card">
+                    <div clas="card-header">
+                      <p class="card-header-title">
+                        {{value.field}}
+                      </p>
+                    </div>
+                    <div class="card-content">
+                  <div><b-field label="Label"><b-input v-model="value.label"></b-input></b-field></div>
                   <div class="number-format">
                     <b-input class="symbol" v-model="value.formatOptions.symbol"></b-input>
                     <span class="num">1</span>
                     <b-input class="sep" v-model="value.formatOptions.thousand"></b-input>
                     <span class="num">000</span>
                     <b-input class="sep" v-model="value.formatOptions.decimal"></b-input>
-                    <span class="num">00</span>
+                    <span class="num">00</span><b-input v-model="value.formatOptions.postfix"></b-input>
                   </div>
-                  <div><b-field label="Precision:"><b-input v-model="value.formatOptions.precision"></b-input></b-field></div>
-                  <div><b-field label="Format:"><b-input v-model="value.formatOptions.format"></b-input></b-field></div>
+                  <div><b-field label="Precision"><b-input v-model="value.formatOptions.precision"></b-input></b-field></div>
+                  <div><b-field label="Format"><b-input v-model="value.formatOptions.format"></b-input></b-field></div>
+                    </div>
+                </div>
                 </div>
               </div>
             </div>
@@ -61,13 +77,25 @@
               </div>
               <div class="columns">
                 <div class="column" v-for="(filter, filterName) in config.filters">
-                  <h1>{{filter.label}}</h1>
-                  <div>Label: <b-input v-model="filter.label"></b-input></div>
-                  <b-field label="Default">
-                    <b-select class="btn btn-default dropdown-toggle" v-model="filter.defaultValue">
-                      <option :value="filterValue.value" :key="filterValue.value" v-for="filterValue in filter.values">{{filterValue.label}}</option>
-                    </b-select>
-                  </b-field>
+                <div class="card">
+                  <div clas="card-header">
+                    <p class="card-header-title">
+                    {{filter.label}}
+                    </p>
+                  </div>
+                  <div class="card-content">
+                    <div class="content">
+                      <b-field label="Label">
+                        <b-input v-model="filter.label"></b-input>
+                      </b-field>
+                      <b-field label="Default">
+                        <b-select class="btn btn-default dropdown-toggle" v-model="filter.defaultValue">
+                          <option :value="filterValue.value" :key="filterValue.value" v-for="filterValue in filter.values">{{filterValue.label}}</option>
+                        </b-select>
+                      </b-field>
+                    </div>
+                  </div>
+                </div>
                 </div>
               </div>
             </div>
@@ -103,7 +131,7 @@ export default {
       config: {'hierarchies': [], 'value': [], 'filters': {}},
       model: {},
       update: false,
-      formatOptionsDefault: { 'symbol': '$', 'decimal': '.', 'thousand': ',', 'precision': 2, format: '%s %v' },
+      formatOptionsDefault: { 'symbol': '$', 'decimal': '.', 'thousand': ',', 'precision': 2, format: '%s%v', postfix: '' },
       activeTab: 0
     }
   },
@@ -295,6 +323,9 @@ a {
 .columns {
   margin-top: 10px;
   justify-content: center;
+  &:last-child {
+    margin-bottom: 0;
+  }
 }
 .column {
   h1 {
