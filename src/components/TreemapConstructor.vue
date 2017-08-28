@@ -12,16 +12,18 @@
         <b-field label="Datapackage">
           <b-input class="datapackageHash" v-model="datapackage">
           </b-input>
-          <a class="button" @click="getModel()">Load datapackage</a>
+          <a class="button constructor-ui" @click="getModel()">Load datapackage</a>
         </b-field>
       </div>
       <div class="config" v-if="hasModel">
         <b-tabs v-model="activeTab">
-          <b-tab-item label="Hierarchies" class="hierarchies config-group">
-            <div class="container">
-              <a class="button" v-for="hierarchy in this.model.hierarchies"  :class="{'is-primary': hasHierarchy(hierarchy)}" @click="selectHierarchy(hierarchy)">{{hierarchy['label']}}</a>
+          <b-tab-item label="Hierarchies" class="hierarchies config-group tile is-vertical is-parent">
+            <div class="tile is-child buttons">
+              <div class="button-ui" v-for="hierarchy in this.model.hierarchies">
+                <a class="button constructor" :class="{'is-primary': hasHierarchy(hierarchy)}" @click="selectHierarchy(hierarchy)">{{hierarchy['label']}}</a>
+              </div>
             </div>
-            <div class="columns">
+            <div class="columns tile is-child">
               <div class="column" v-for="(hierarchy, hierarchyName) in config.hierarchies">
                 <div class="card">
                   <div clas="card-header">
@@ -41,10 +43,14 @@
             </div>
             </div>
           </b-tab-item>
-          <b-tab-item label="Measures" class="measures config-group">
-            <div class="content">
-              <a class="button" @click="selectMeasure(aggregate)" :class="{'is-primary': hasMeasure(aggregate)}" v-for="aggregate in this.model.aggregates" v-if="aggregate['function'] == 'sum'">{{aggregate['label']}}</a>
-              <div class="columns">
+          <b-tab-item label="Measures" class="measures config-group tile is-vertical is-parent">
+            <div class="content tile is-child">
+              <div class="tile buttons">
+                <div class="button-ui" v-for="aggregate in this.model.aggregates">
+                  <a class="button" @click="selectMeasure(aggregate)" :class="{'is-primary': hasMeasure(aggregate)}" v-if="aggregate['function'] == 'sum'">{{aggregate['label']}}</a>
+                </div>
+              </div>
+              <div class="columns tile is-child">
                 <div class="column" v-for="value in this.config.value">
                   <div class="card">
                     <div clas="card-header">
@@ -70,10 +76,12 @@
               </div>
             </div>
           </b-tab-item>
-          <b-tab-item label="Filters" class="filters config-group">
-            <div class="content">
-              <div class="filters-buttons">
-              <a class="button" @click="selectFilter(dimension)" :class="{'is-primary': hasFilter(dimension)}" v-for="dimension in this.model.dimensions">{{dimension['label']}}</a>
+          <b-tab-item label="Filters" class="filters config-group tile is-vertical is-parent">
+            <div class="content tile is-child">
+              <div class="buttons">
+                <div class="button-ui" v-for="dimension in this.model.dimensions">
+                  <a class="button" @click="selectFilter(dimension)" :class="{'is-primary': hasFilter(dimension)}">{{dimension['label']}}</a>
+                </div>
               </div>
               <div class="columns">
                 <div class="column" v-for="(filter, filterName) in config.filters">
@@ -392,6 +400,19 @@ a {
 
 .filters-buttons {
    min-height: 100px;
+}
+
+.button-ui {
+  margin-right: 5px;
+  margin-top: 5px;
+  float: left;
+}
+
+.buttons {
+  justify-content: center;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 </style>
