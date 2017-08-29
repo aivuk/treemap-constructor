@@ -77,7 +77,7 @@
               <div class="tile is-child">
                 <button class="button" @click="addScale()">Add scale</button>
               <div class="columns tile is-child">
-                <div class="column" v-for="scale in config.scale">
+                <div class="column" v-if="i > 0" v-for="(scale, i) in config.scale">
                   <div class="card">
                     <div class="card-content">
                       <b-field label="Label">
@@ -169,6 +169,9 @@ export default {
     },
 
     addScale: function () {
+      if (this.config.scale.length === 0) {
+        this.config.scale.push({'label': 'Total', 'number': 1, 'description': ''})
+      }
       var newScale = {'label': '', 'number': 1, 'description': ''}
       this.config.scale.push(newScale)
     },
