@@ -89,6 +89,7 @@
                       <b-field label="Number">
                         <b-input v-model="scale.number"></b-input>
                       </b-field>
+                      <button @click="removeScale(scale)">Remove</button>
                     </div>
                   </div>
                 </div>
@@ -129,11 +130,10 @@
             </div>
           </b-tab-item>
         </b-tabs>
-      <div class="content export">
-        <button class="button is-medium is-success" @click="showConfig">Show config</button>
-        <button class="button is-medium is-success" @click="downloadConfig">Download config</button>
-      </div>
-
+        <div class="content export">
+          <button class="button is-medium is-success" @click="showConfig">Show config</button>
+          <button class="button is-medium is-success" @click="downloadConfig">Download config</button>
+        </div>
       </div>
     </div>
     <div class="treemap-preview" v-if="showTreemap">
@@ -174,6 +174,11 @@ export default {
       }
       var newScale = {'label': '', 'number': 1, 'description': ''}
       this.config.scale.push(newScale)
+    },
+
+    removeScale: function (scale) {
+      var s = this.config['scale']
+      console.log(s.findIndex(scale))
     },
 
     selectHierarchy: function (hierarchy) {
@@ -352,7 +357,6 @@ a {
 
   .config {
     .b-tabs {
-      max-width: 60%;
       margin: auto;
     }
 
@@ -384,7 +388,7 @@ a {
     font-weight: bold;
   }
 
-  max-width: 25%;
+  max-width: 500px;
 }
 
 .dialog .modal-card {
