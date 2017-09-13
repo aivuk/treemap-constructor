@@ -156,7 +156,7 @@ export default {
       datapackage: 'a6a16b964a7e784f99adecc47f26318a:berlin_16_17_clean',
       hasModel: false,
       showTreemap: false,
-      config: {'hierarchies': [], 'value': [], 'scale': [], 'filters': {}},
+      config: {'datapackage': this.datapackage, 'hierarchies': [], 'value': [], 'scale': [], 'filters': {}},
       model: {},
       update: false,
       formatOptionsDefault: { 'symbol': '$', 'decimal': '.', 'thousand': ',', 'precision': 2, format: '%s%v', postfix: '' },
@@ -215,7 +215,7 @@ export default {
     },
 
     showConfig: function () {
-      this.$dialog.alert({
+      this.$dialog.alert({'datapackage': this.datapackage,
         message: '<pre>' + this.configString + '</pre>'
       })
     },
@@ -298,6 +298,7 @@ export default {
 
           if (sumAggregate) {
             this.$set(this.config, 'value', [])
+            this.$set(this.config, 'datapackage', this.datapackage)
             this.config['value'].push({ 'field': sumAggregate['ref'], 'formatOptions': this.formatOptionsDefault, 'label': sumAggregate['label'] })
           }
         })
