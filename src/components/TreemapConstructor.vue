@@ -12,59 +12,128 @@
         <b-field label="Datapackage">
           <b-input class="datapackageHash" v-model="datapackage">
           </b-input>
-          <a class="button" @click="getModel()">Load datapackage</a>
+          <a class="button constructor-ui" @click="getModel()">Load datapackage</a>
         </b-field>
       </div>
       <div class="config" v-if="hasModel">
-        <b-tabs v-model="activeTab">
-          <b-tab-item label="Hierarchies" class="hierarchies config-group">
-            <a class="button" v-for="hierarchy in this.model.hierarchies"  :class="{'is-primary': hasHierarchy(hierarchy)}" @click="selectHierarchy(hierarchy)">{{hierarchy['label']}}</a>
+        <b-tabs v-model="activeTab" type="is-boxed">
+          <b-tab-item label="Hierarchies" class="hierarchies config-group tile is-vertical is-parent">
+            <div class="tile is-child buttons">
+              <div class="button-ui" v-for="hierarchy in this.model.hierarchies">
+                <a class="button constructor" :class="{'is-info': hasHierarchy(hierarchy)}" @click="selectHierarchy(hierarchy)">{{hierarchy['label']}}</a>
+              </div>
+            </div>
+            <div class="columns tile is-child">
+              <div class="column" v-for="(hierarchy, hierarchyName) in config.hierarchies">
+                <div class="card">
+                  <div clas="card-header">
+                    <p class="card-header-title">
+                      {{hierarchy.label}}
+                    </p>
+                  </div>
+                  <div class="card-content">
+                    <b-field label="Label">
+                    <b-input v-model="hierarchy.label"></b-input>
+                    </b-field>
+                    <b-field label="URL">
+                      <b-input v-model="hierarchy.url"></b-input>
+                    </b-field>
+                  </div>
+                </div>
+            </div>
+            </div>
           </b-tab-item>
-          <b-tab-item label="Measures" class="measures config-group">
-            <div class="content">
-              <a class="button" @click="selectMeasure(aggregate)" :class="{'is-primary': aggregate['ref'] === config['value'][0]['field']}" v-for="aggregate in this.model.aggregates" v-if="aggregate['function'] == 'sum'">{{aggregate['label']}}</a>
-              <div class="columns">
+          <b-tab-item label="Measures" class="measures config-group tile is-vertical is-parent">
+            <div class="content tile is-child">
+              <div class="tile buttons">
+                <div class="button-ui" v-for="aggregate in this.model.aggregates">
+                  <a class="button" @click="selectMeasure(aggregate)" :class="{'is-info': hasMeasure(aggregate)}" v-if="aggregate['function'] == 'sum'">{{aggregate['label']}}</a>
+                </div>
+              </div>
+              <div class="columns tile is-child">
                 <div class="column" v-for="value in this.config.value">
-                  <h1>{{value.field}}</h1>
-                  <div><b-field label="Label:"><b-input v-model="value.label"></b-input></b-field></div>
+                  <div class="card">
+                    <div clas="card-header">
+                      <p class="card-header-title">
+                        {{value.field}}
+                      </p>
+                    </div>
+                    <div class="card-content">
+                  <div><b-field label="Label"><b-input v-model="value.label"></b-input></b-field></div>
                   <div class="number-format">
                     <b-input class="symbol" v-model="value.formatOptions.symbol"></b-input>
                     <span class="num">1</span>
                     <b-input class="sep" v-model="value.formatOptions.thousand"></b-input>
                     <span class="num">000</span>
                     <b-input class="sep" v-model="value.formatOptions.decimal"></b-input>
-                    <span class="num">00</span>
+                    <span class="num">00</span><b-input v-model="value.formatOptions.postfix"></b-input>
                   </div>
-                  <div><b-field label="Precision:"><b-input v-model="value.formatOptions.precision"></b-input></b-field></div>
-                  <div><b-field label="Format:"><b-input v-model="value.formatOptions.format"></b-input></b-field></div>
+                  <div><b-field label="Precision"><b-input v-model="value.formatOptions.precision"></b-input></b-field></div>
+                  <div><b-field label="Format"><b-input v-model="value.formatOptions.format"></b-input></b-field></div>
+                    </div>
                 </div>
+                </div>
+              </div>
+              <div class="tile is-child">
+                <button class="button" @click="addScale()">Add scale</button>
+              <div class="columns tile is-child">
+                <div class="column" v-if="i > 0" v-for="(scale, i) in config.scale">
+                  <div class="card">
+                    <div class="card-content">
+                      <b-field label="Label">
+                        <b-input v-model="scale.label"></b-input>
+                      </b-field>
+                      <b-field label="Description">
+                        <b-input v-model="scale.description"></b-input>
+                      </b-field>
+                      <b-field label="Number">
+                        <b-input v-model="scale.number"></b-input>
+                      </b-field>
+                      <button @click="removeScale(scale)">Remove</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
               </div>
             </div>
           </b-tab-item>
-          <b-tab-item label="Filters" class="filters config-group">
-            <div class="content">
-              <div class="filters-buttons">
-              <a class="button" @click="selectFilter(dimension)" :class="{'is-primary': hasFilter(dimension)}" v-for="dimension in this.model.dimensions">{{dimension['label']}}</a>
+          <b-tab-item label="Filters" class="filters config-group tile is-vertical is-parent">
+            <div class="content tile is-child">
+              <div class="buttons">
+                <div class="button-ui" v-for="dimension in this.model.dimensions">
+                  <a class="button" @click="selectFilter(dimension)" :class="{'is-info': hasFilter(dimension)}">{{dimension['label']}}</a>
+                </div>
               </div>
               <div class="columns">
                 <div class="column" v-for="(filter, filterName) in config.filters">
-                  <h1>{{filter.label}}</h1>
-                  <div>Label: <b-input v-model="filter.label"></b-input></div>
-                  <b-field label="Default">
-                    <b-select class="btn btn-default dropdown-toggle" v-model="filter.defaultValue">
-                      <option :value="filterValue.value" :key="filterValue.value" v-for="filterValue in filter.values">{{filterValue.label}}</option>
-                    </b-select>
-                  </b-field>
+                <div class="card">
+                  <div clas="card-header">
+                    <p class="card-header-title">
+                    {{filter.label}}
+                    </p>
+                  </div>
+                  <div class="card-content">
+                    <div class="content">
+                      <b-field label="Label">
+                        <b-input v-model="filter.label"></b-input>
+                      </b-field>
+                      <b-field label="Default">
+                        <b-select class="btn btn-default dropdown-toggle" v-model="filter.defaultValue">
+                          <option :value="filterValue.value" :key="filterValue.value" v-for="filterValue in filter.values">{{filterValue.label}}</option>
+                        </b-select>
+                      </b-field>
+                    </div>
+                  </div>
+                </div>
                 </div>
               </div>
             </div>
           </b-tab-item>
         </b-tabs>
-      <div class="content export">
-        <button class="button is-medium is-primary" @click="showConfig">Show config</button>
-        <button class="button is-medium is-primary" @click="downloadConfig">Download config</button>
-      </div>
-
+        <div class="content export">
+          <button class="button is-medium is-success" @click="showConfig">Show config</button>
+          <button class="button is-medium is-success" @click="downloadConfig">Download config</button>
+        </div>
       </div>
     </div>
     <div class="treemap-preview" v-if="showTreemap">
@@ -87,16 +156,29 @@ export default {
       datapackage: 'a6a16b964a7e784f99adecc47f26318a:berlin_16_17_clean',
       hasModel: false,
       showTreemap: false,
-      config: {'hierarchies': [], 'value': [], 'filters': {}},
+      config: {'hierarchies': [], 'value': [], 'scale': [], 'filters': {}},
       model: {},
       update: false,
-      formatOptionsDefault: { 'symbol': '$', 'decimal': '.', 'thousand': ',', 'precision': 2, format: '%s %v' },
+      formatOptionsDefault: { 'symbol': '$', 'decimal': '.', 'thousand': ',', 'precision': 2, format: '%s%v', postfix: '' },
       activeTab: 0
     }
   },
   methods: {
     emptyConfig: function () {
       return Object.keys(this.config).length === 0
+    },
+
+    addScale: function () {
+      if (this.config.scale.length === 0) {
+        this.config.scale.push({'label': 'Total', 'number': 1, 'description': ''})
+      }
+      var newScale = {'label': '', 'number': 1, 'description': ''}
+      this.config.scale.push(newScale)
+    },
+
+    removeScale: function (scale) {
+      var s = this.config['scale']
+      console.log(s.findIndex(scale))
     },
 
     selectHierarchy: function (hierarchy) {
@@ -122,6 +204,11 @@ export default {
       return (hasHierarchy > -1)
     },
 
+    hasMeasure: function (measure) {
+      var hasMeasure = this.config['value'].findIndex(h => h['label'] === measure['label'])
+      return (hasMeasure > -1)
+    },
+
     hasFilter: function (filter) {
       var hasFilter = this.config['filters'].hasOwnProperty(filter['label'])
       return hasFilter
@@ -144,7 +231,18 @@ export default {
     },
 
     selectMeasure: function (measure) {
-      this.config['value'].push({ 'field': measure['ref'], 'formatOptions': this.formatOptionsDefault, 'label': measure['label'] })
+      var hasMeasure = this.config['value'].findIndex(h => h['label'] === measure['label'])
+      if (hasMeasure === -1) {
+        this.config['value'].push({
+          'field': measure['ref'],
+          'formatOptions': this.formatOptionsDefault,
+          'label': measure['label']
+        })
+      } else {
+        if (this.config['value'].length > 1) {
+          this.config['value'].splice(hasMeasure, 1)
+        }
+      }
     },
 
     selectFilter: function (dimension) {
@@ -259,11 +357,15 @@ a {
 
   .config {
     .b-tabs {
-      max-width: 60%;
       margin: auto;
     }
+
    }
 
+}
+
+.config-group {
+  min-height: 100px;
 }
 
 .content {
@@ -277,13 +379,16 @@ a {
 .columns {
   margin-top: 10px;
   justify-content: center;
+  &:last-child {
+    margin-bottom: 0;
+  }
 }
 .column {
   h1 {
     font-weight: bold;
   }
 
-  max-width: 25%;
+  max-width: 500px;
 }
 
 .dialog .modal-card {
@@ -311,7 +416,7 @@ a {
   }
   .num {
      float: left;
-     font-size: 25px;
+     font-size: 18px;
   }
 
   &::after {
@@ -327,6 +432,19 @@ a {
 
 .filters-buttons {
    min-height: 100px;
+}
+
+.button-ui {
+  margin-right: 5px;
+  margin-top: 5px;
+  float: left;
+}
+
+.buttons {
+  justify-content: center;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 </style>
