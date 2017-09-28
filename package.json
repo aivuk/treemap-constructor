@@ -1,6 +1,6 @@
 {
   "name": "treemap-constructor",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A UI to edit Datapackage Treemap's configuration ",
   "author": "Edgar Zanella Alvarenga <e@vaz.io>",
   "private": false,
