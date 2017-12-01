@@ -1,16 +1,25 @@
 # treemap-constructor
 
-> A UI to edit Datapackage Treemap's configuration 
+> A UI to edit Datapackage Treemap's configuration
 
 ## Build Setup
+
+First install the required sibling-lib `dpvis`
+
+```bash
+git clone git@github.com:aivuk/dpvis.git
+cd dpvis
+npm run build:lib
+npm link
+```
 
 ``` bash
 # install dependencies
 npm install
+npm link dpvis
 
 # serve with hot reload at localhost:8080
 npm run dev
-
 # build for production with minification
 npm run build
 
