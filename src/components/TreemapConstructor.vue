@@ -33,15 +33,13 @@
                   </div>
                   <div class="card-content">
                     <b-field label="Label">
-                    <b-input v-model="hierarchy.label"></b-input>
-                    </b-field>
-                    <b-field label="URL">
-                      <b-input v-model="hierarchy.url"></b-input>
+                      <b-input v-model="hierarchy.label" @change.native="updateURL(hierarchy)"></b-input>
                     </b-field>
                   </div>
                 </div>
             </div>
             </div>
+
           </b-tab-item>
           <b-tab-item label="Measures" class="measures config-group tile is-vertical is-parent">
             <div class="content tile is-child">
@@ -144,6 +142,7 @@
 
 <script>
 import { treemap } from 'dpvis'
+import { snakeCase } from 'lodash'
 import * as axios from 'axios'
 import 'dpvis/dist/lib/dpvis.min.css'
 
@@ -179,6 +178,10 @@ export default {
     removeScale: function (scale) {
       var s = this.config['scale']
       console.log(s.findIndex(scale))
+    },
+
+    updateURL: function (hierarchy) {
+      hierarchy.url = snakeCase(hierarchy.label)
     },
 
     selectHierarchy: function (hierarchy) {
