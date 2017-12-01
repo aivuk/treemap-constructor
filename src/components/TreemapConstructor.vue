@@ -445,7 +445,6 @@ a {
 }
 
 .buttons {
-  justify-content: center;
   display: flex;
   align-items: center;
   flex-wrap: wrap;
