@@ -176,8 +176,8 @@ export default {
     },
 
     removeScale: function (scale) {
-      var s = this.config['scale']
-      console.log(s.findIndex(scale))
+      var index = this.config.scale.indexOf(scale)
+      this.config.scale.splice(index, 1)
     },
 
     updateURL: function (hierarchy) {
