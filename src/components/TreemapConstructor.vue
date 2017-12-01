@@ -12,7 +12,7 @@
         <b-field label="Datapackage">
           <b-input class="datapackageHash" v-model="datapackage">
           </b-input>
-          <a class="button constructor-ui" @click="getModel()">Load datapackage</a>
+          <a class="button constructor-ui" @click="getModel()">Datensatz laden</a>
         </b-field>
       </div>
       <div class="config" v-if="hasModel">
@@ -32,7 +32,7 @@
                     </p>
                   </div>
                   <div class="card-content">
-                    <b-field label="Label">
+                    <b-field label="Bezeichnung">
                       <b-input v-model="hierarchy.label" @change.native="updateURL(hierarchy)"></b-input>
                     </b-field>
                   </div>
@@ -57,7 +57,7 @@
                       </p>
                     </div>
                     <div class="card-content">
-                  <div><b-field label="Label"><b-input v-model="value.label"></b-input></b-field></div>
+                  <div><b-field label="Bezeichnung"><b-input v-model="value.label"></b-input></b-field></div>
                   <div class="number-format">
                     <b-input class="symbol" v-model="value.formatOptions.symbol"></b-input>
                     <span class="num">1</span>
@@ -66,14 +66,14 @@
                     <b-input class="sep" v-model="value.formatOptions.decimal"></b-input>
                     <span class="num">00</span><b-input v-model="value.formatOptions.postfix"></b-input>
                   </div>
-                  <div><b-field label="Precision"><b-input v-model="value.formatOptions.precision"></b-input></b-field></div>
+                  <div><b-field label="Nachkommastellen"><b-input v-model="value.formatOptions.precision"></b-input></b-field></div>
                   <div><b-field label="Format"><b-input v-model="value.formatOptions.format"></b-input></b-field></div>
                     </div>
                 </div>
                 </div>
               </div>
               <div class="tile is-child">
-                <button class="button" @click="addScale()">Add scale</button>
+                <button class="button" @click="addScale()">Skala hinzufügen</button>
               <div class="columns tile is-child">
                 <div class="column" v-if="i > 0" v-for="(scale, i) in config.scale">
                   <div class="card">
@@ -112,10 +112,10 @@
                   </div>
                   <div class="card-content">
                     <div class="content">
-                      <b-field label="Label">
+                      <b-field label="Bezeichnung">
                         <b-input v-model="filter.label"></b-input>
                       </b-field>
-                      <b-field label="Default">
+                      <b-field label="Standardauswahl">
                         <b-select class="btn btn-default dropdown-toggle" v-model="filter.defaultValue">
                           <option :value="filterValue.value" :key="filterValue.value" v-for="filterValue in filter.values">{{filterValue.label}}</option>
                         </b-select>
@@ -129,8 +129,8 @@
           </b-tab-item>
         </b-tabs>
         <div class="content export">
-          <button class="button is-medium is-success" @click="showConfig">Show config</button>
-          <button class="button is-medium is-success" @click="downloadConfig">Download config</button>
+          <button class="button is-medium is-success" @click="showConfig">Konfiguration anzeigen</button>
+          <button class="button is-medium is-success" @click="downloadConfig">Konfiguration herunterladen</button>
         </div>
       </div>
     </div>
