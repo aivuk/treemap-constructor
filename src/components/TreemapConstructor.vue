@@ -384,10 +384,6 @@ a {
 
 .columns {
   margin-top: 10px;
-  justify-content: center;
-  &:last-child {
-    margin-bottom: 0;
-  }
 }
 .column {
   h1 {
@@ -447,7 +443,6 @@ a {
 }
 
 .buttons {
-  justify-content: center;
   display: flex;
   align-items: center;
   flex-wrap: wrap;
