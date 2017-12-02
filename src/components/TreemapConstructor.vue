@@ -18,6 +18,7 @@
       <div class="config" v-if="hasModel">
         <b-tabs v-model="activeTab" type="is-boxed">
           <b-tab-item label="Hierarchies" class="hierarchies config-group tile is-vertical is-parent">
+            <p class="explanation">Wählen Sie hier nur die Klassifizierungen der Haushaltstitel (also: Administrative Functional und Economic Classification). Hier werden die verschiedenen Levels der Haushaltstitel visualisiert.</p>
             <div class="tile is-child buttons">
               <div class="button-ui" v-for="hierarchy in this.model.hierarchies">
                 <a class="button constructor" :class="{'is-info': hasHierarchy(hierarchy)}" @click="selectHierarchy(hierarchy)">{{hierarchy['label']}}</a>
@@ -42,6 +43,7 @@
 
           </b-tab-item>
           <b-tab-item label="Measures" class="measures config-group tile is-vertical is-parent">
+            <p class="explanation">Wählen Sie hier das Zahlenformat, Währungssymbol und Nachkommastelle aus. Sie können auch eine Skala hinzufügen, welche z.B. die Beträge pro Person (oder pro Erwerbstätigen) anzeigt. Fügen Sie dazu die Zahl der Einwohner des Ortes hinzu – als ganze Zahl ohne Punkt oder Komma.</p>
             <div class="content tile is-child">
               <div class="tile buttons">
                 <div class="button-ui" v-for="aggregate in this.model.aggregates">
@@ -96,6 +98,7 @@
             </div>
           </b-tab-item>
           <b-tab-item label="Filters" class="filters config-group tile is-vertical is-parent">
+            <p class="explanation">Legen Sie fest nach welchen Kategorien die Daten gefiltert werden, z.B. das Jahr, die Budget Richtung oder die Betragsart. Außerdem können Sie die Erstansicht definieren, also welches Jahr als erstes angezeigt werden soll.</p>
             <div class="content tile is-child">
               <div class="buttons">
                 <div class="button-ui" v-for="dimension in this.model.dimensions">
@@ -449,6 +452,11 @@ a {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
+}
+
+.explanation {
+  max-width: 80ch;
+  margin-bottom: 1em;
 }
 
 </style>
