@@ -12,12 +12,13 @@
         <b-field label="Datapackage">
           <b-input class="datapackageHash" v-model="datapackage">
           </b-input>
-          <a class="button constructor-ui" @click="getModel()">Load datapackage</a>
+          <a class="button constructor-ui" @click="getModel()">Datensatz laden</a>
         </b-field>
       </div>
       <div class="config" v-if="hasModel">
         <b-tabs v-model="activeTab" type="is-boxed">
           <b-tab-item label="Hierarchies" class="hierarchies config-group tile is-vertical is-parent">
+            <p class="explanation">Wählen Sie hier nur die Klassifizierungen der Haushaltstitel (also: Administrative Functional und Economic Classification). Hier werden die verschiedenen Levels der Haushaltstitel visualisiert.</p>
             <div class="tile is-child buttons">
               <div class="button-ui" v-for="hierarchy in this.model.hierarchies">
                 <a class="button constructor" :class="{'is-info': hasHierarchy(hierarchy)}" @click="selectHierarchy(hierarchy)">{{hierarchy['label']}}</a>
@@ -32,7 +33,7 @@
                     </p>
                   </div>
                   <div class="card-content">
-                    <b-field label="Label">
+                    <b-field label="Bezeichnung">
                       <b-input v-model="hierarchy.label" @change.native="updateURL(hierarchy)"></b-input>
                     </b-field>
                   </div>
@@ -42,6 +43,7 @@
 
           </b-tab-item>
           <b-tab-item label="Measures" class="measures config-group tile is-vertical is-parent">
+            <p class="explanation">Wählen Sie hier das Zahlenformat, Währungssymbol und Nachkommastelle aus. Sie können auch eine Skala hinzufügen, welche z.B. die Beträge pro Person (oder pro Erwerbstätigen) anzeigt. Fügen Sie dazu die Zahl der Einwohner des Ortes hinzu – als ganze Zahl ohne Punkt oder Komma.</p>
             <div class="content tile is-child">
               <div class="tile buttons">
                 <div class="button-ui" v-for="aggregate in this.model.aggregates">
@@ -57,7 +59,7 @@
                       </p>
                     </div>
                     <div class="card-content">
-                  <div><b-field label="Label"><b-input v-model="value.label"></b-input></b-field></div>
+                  <div><b-field label="Bezeichnung"><b-input v-model="value.label"></b-input></b-field></div>
                   <div class="number-format">
                     <b-input class="symbol" v-model="value.formatOptions.symbol"></b-input>
                     <span class="num">1</span>
@@ -66,13 +68,13 @@
                     <b-input class="sep" v-model="value.formatOptions.decimal"></b-input>
                     <span class="num">00</span><b-input v-model="value.formatOptions.postfix"></b-input>
                   </div>
-                  <div><b-field label="Precision"><b-input v-model="value.formatOptions.precision"></b-input></b-field></div>
+                  <div><b-field label="Nachkommastellen"><b-input v-model="value.formatOptions.precision"></b-input></b-field></div>
                     </div>
                 </div>
                 </div>
               </div>
               <div class="tile is-child">
-                <button class="button" @click="addScale()">Add scale</button>
+                <button class="button" @click="addScale()">Skala hinzufügen</button>
               <div class="columns tile is-child">
                 <div class="column" v-if="i > 0" v-for="(scale, i) in config.scale">
                   <div class="card">
@@ -86,7 +88,7 @@
                       <b-field label="Number">
                         <b-input v-model="scale.number"></b-input>
                       </b-field>
-                      <button @click="removeScale(scale)">Remove</button>
+                      <button class="button" @click="removeScale(scale)">Remove</button>
                     </div>
                   </div>
                 </div>
@@ -95,6 +97,7 @@
             </div>
           </b-tab-item>
           <b-tab-item label="Filters" class="filters config-group tile is-vertical is-parent">
+            <p class="explanation">Legen Sie fest nach welchen Kategorien die Daten gefiltert werden, z.B. das Jahr, die Budget Richtung oder die Betragsart. Außerdem können Sie die Erstansicht definieren, also welches Jahr als erstes angezeigt werden soll.</p>
             <div class="content tile is-child">
               <div class="buttons">
                 <div class="button-ui" v-for="dimension in this.model.dimensions">
@@ -111,10 +114,10 @@
                   </div>
                   <div class="card-content">
                     <div class="content">
-                      <b-field label="Label">
+                      <b-field label="Bezeichnung">
                         <b-input v-model="filter.label"></b-input>
                       </b-field>
-                      <b-field label="Default">
+                      <b-field label="Standardauswahl">
                         <b-select class="btn btn-default dropdown-toggle" v-model="filter.defaultValue">
                           <option :value="filterValue.value" :key="filterValue.value" v-for="filterValue in filter.values">{{filterValue.label}}</option>
                         </b-select>
@@ -128,8 +131,8 @@
           </b-tab-item>
         </b-tabs>
         <div class="content export">
-          <button class="button is-medium is-success" @click="showConfig">Show config</button>
-          <button class="button is-medium is-success" @click="downloadConfig">Download config</button>
+          <button class="button is-medium is-success" @click="showConfig">Konfiguration anzeigen</button>
+          <button class="button is-medium is-success" @click="downloadConfig">Konfiguration herunterladen</button>
         </div>
       </div>
     </div>
@@ -448,6 +451,11 @@ a {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
+}
+
+.explanation {
+  max-width: 80ch;
+  margin-bottom: 1em;
 }
 
 </style>
