@@ -87,7 +87,7 @@
                       <b-field label="Number">
                         <b-input v-model="scale.number"></b-input>
                       </b-field>
-                      <button @click="removeScale(scale)">Remove</button>
+                      <button class="button" @click="removeScale(scale)">Remove</button>
                     </div>
                   </div>
                 </div>
