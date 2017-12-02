@@ -69,7 +69,6 @@
                     <span class="num">00</span><b-input v-model="value.formatOptions.postfix"></b-input>
                   </div>
                   <div><b-field label="Nachkommastellen"><b-input v-model="value.formatOptions.precision"></b-input></b-field></div>
-                  <div><b-field label="Format"><b-input v-model="value.formatOptions.format"></b-input></b-field></div>
                     </div>
                 </div>
                 </div>
