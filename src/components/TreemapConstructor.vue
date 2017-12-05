@@ -15,9 +15,9 @@
           <a class="button constructor-ui" @click="getModel()">Datensatz laden</a>
         </b-field>
       </div>
-      <div class="config" v-if="hasModel">
+      <div class="config" v-if="hasModel && !uploadTreemapDialog">
         <b-tabs v-model="activeTab" type="is-boxed">
-          <b-tab-item label="Hierarchies" class="hierarchies config-group tile is-vertical is-parent">
+          <b-tab-item label="Hierarchien" class="hierarchies config-group tile is-vertical is-parent">
             <p class="explanation">Wählen Sie hier nur die Klassifizierungen der Haushaltstitel (also: Administrative Functional und Economic Classification). Hier werden die verschiedenen Levels der Haushaltstitel visualisiert.</p>
             <div class="tile is-child buttons">
               <div class="button-ui" v-for="hierarchy in this.model.hierarchies">
@@ -42,7 +42,7 @@
             </div>
 
           </b-tab-item>
-          <b-tab-item label="Measures" class="measures config-group tile is-vertical is-parent">
+          <b-tab-item label="Werte" class="measures config-group tile is-vertical is-parent">
             <p class="explanation">Wählen Sie hier das Zahlenformat, Währungssymbol und Nachkommastelle aus. Sie können auch eine Skala hinzufügen, welche z.B. die Beträge pro Person (oder pro Erwerbstätigen) anzeigt. Fügen Sie dazu die Zahl der Einwohner des Ortes hinzu – als ganze Zahl ohne Punkt oder Komma.</p>
             <div class="content tile is-child">
               <div class="tile buttons">
@@ -96,7 +96,7 @@
               </div>
             </div>
           </b-tab-item>
-          <b-tab-item label="Filters" class="filters config-group tile is-vertical is-parent">
+          <b-tab-item label="Filter" class="filters config-group tile is-vertical is-parent">
             <p class="explanation">Legen Sie fest nach welchen Kategorien die Daten gefiltert werden, z.B. das Jahr, die Budget Richtung oder die Betragsart. Außerdem können Sie die Erstansicht definieren, also welches Jahr als erstes angezeigt werden soll.</p>
             <div class="content tile is-child">
               <div class="buttons">
@@ -133,9 +133,34 @@
         <div class="content export">
           <button class="button is-medium is-success" @click="showConfig">Konfiguration anzeigen</button>
           <button class="button is-medium is-success" @click="downloadConfig">Konfiguration herunterladen</button>
+          <button class="button is-medium is-success" @click="uploadTreemapDialog = !uploadTreemapDialog">Konfiguration upload</button>
         </div>
       </div>
     </div>
+    <!-- Upload dialog -->
+    <div class="treemap-upload" v-if="uploadTreemapDialog">
+       <b-field label="Level">
+         <b-select class="btn btn-default dropdown-toggle" v-model="config['level']">
+           <option value="land">Land</option>
+           <option value="kommune">Kommune</option>
+           <option value="bund">Bund</option>
+         </b-select>
+       </b-field>
+       <b-field label="Land" v-if="config['level'] == 'land' || config['level'] == 'kommune'">
+         <b-select class="btn btn-default dropdown-toggle" v-model="config['state']">
+           <option :value="land.code" :key="land.code" v-for="land in bundesland">{{land.name}}</option>
+         </b-select>
+       </b-field>
+       <b-field label="Kommune name" v-if="config['level'] == 'kommune'">
+         <b-input v-model="config['name']"></b-input>
+       </b-field>
+       <b-field label="Text">
+         <b-input type="textarea" rows=10 v-model="config['text']"></b-input>
+       </b-field>
+       <button class="button is-medium is-danger" @click="uploadTreemapDialog = false">Abbrechen</button>
+       <button class="button is-medium is-success" @click="uploadConfig">Konfiguration hochladen</button>
+    </div>
+    <!-- End upload dialog -->
     <div class="treemap-preview" v-if="showTreemap">
       <treemap @v-on:update="updateData()" :datapackage="datapackage" apiurl="https://openspending.org/api/3/cubes/" :config="config"></treemap>
     </div>
@@ -147,6 +172,8 @@ import { treemap } from 'dpvis'
 import { snakeCase } from 'lodash'
 import * as axios from 'axios'
 import 'dpvis/dist/lib/dpvis.min.css'
+import { bundesland } from './bundesland'
+import { stringify } from 'querystring'
 
 export default {
   name: 'treemap-constructor',
@@ -159,14 +186,44 @@ export default {
       showTreemap: false,
       config: {'datapackage': this.datapackage, 'hierarchies': [], 'value': [], 'scale': [], 'filters': {}},
       model: {},
+      // Paramters to Staticman
+      land: '',
+      bundesland: bundesland,
+      kommune: '',
+      text: '',
+
       update: false,
-      formatOptionsDefault: { 'symbol': '$', 'decimal': '.', 'thousand': ',', 'precision': 2, format: '%s%v', postfix: '' },
+      uploadTreemapDialog: false,
+      formatOptionsDefault: { 'symbol': '', 'decimal': '.', 'thousand': ',', 'precision': 2, format: '%s%v', postfix: '€' },
       activeTab: 0
     }
+  },
+  created: function () {
+    if (this.$treemapconfig) {
+      this.config = this.$treemapconfig
+      this.datapackage = this.config['datapackage']
+      this.getModel()
+      this.showTreemap = true
+    }
+  },
+  mounted () {
   },
   methods: {
     emptyConfig: function () {
       return Object.keys(this.config).length === 0
+    },
+
+    uploadConfig: function () {
+      var configToSite = {
+        'fields[state]': this.config['state'],
+        'fields[name]': this.config['name'],
+        'fields[text]': this.config['text'],
+        'fields[level]': this.config['level'],
+        'fields[config]': this.configString
+      }
+      axios.post('https://staticman.vaz.io/v2/entry/okfde/offenerhaushalt.de/dev/budget',
+        stringify(configToSite),
+        {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
     },
 
     addScale: function () {
@@ -187,7 +244,7 @@ export default {
     },
 
     selectHierarchy: function (hierarchy) {
-      var hasHierarchy = this.config['hierarchies'].findIndex(h => h['label'] === hierarchy['label'])
+      var hasHierarchy = this.config['hierarchies'].findIndex(h => h['datapackageHierarchy'] === hierarchy['ref'])
       if (hasHierarchy === -1) {
         this.config['hierarchies'].push({
           'datapackageHierarchy': hierarchy['ref'],
@@ -205,7 +262,7 @@ export default {
     },
 
     hasHierarchy: function (hierarchy) {
-      var hasHierarchy = this.config['hierarchies'].findIndex(h => h['label'] === hierarchy['label'])
+      var hasHierarchy = this.config['hierarchies'].findIndex(h => h['datapackageHierarchy'] === hierarchy['ref'])
       return (hasHierarchy > -1)
     },
 
@@ -301,7 +358,7 @@ export default {
             }
           }
 
-          if (sumAggregate) {
+          if (!this.config['value'] && sumAggregate) {
             this.$set(this.config, 'value', [])
             this.$set(this.config, 'datapackage', this.datapackage)
             this.config['value'].push({ 'field': sumAggregate['ref'], 'formatOptions': this.formatOptionsDefault, 'label': sumAggregate['label'] })
