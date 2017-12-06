@@ -1,20 +1,14 @@
 <template>
   <div class="treemap-constructor">
-    <section class="hero">
-      <div class="hero-body">
-        <div class="container">
-          <h1 class="title"> Treemap constructor </h1>
-        </div>
-      </div>
-    </section>
     <div class="datapackage">
       <div class="datapackage-loader container">
-        <b-field label="Datapackage">
-          <b-input class="datapackageHash" v-model="datapackage">
+        <b-field label="">
+          <b-input class="datapackageHash" placeholder="ID aus OpenSpending" v-model="datapackage">
           </b-input>
-          <a class="button constructor-ui" @click="getModel()">Datensatz laden</a>
+          <a class="blue-button constructor-ui" @click="getModel()">Datensatz laden</a>
         </b-field>
       </div>
+      <a class="finde-id-help" href="/hinzufuegen/help">Wo finde ich die ID?</a>
       <div class="config" v-if="hasModel && !uploadTreemapDialog">
         <b-tabs v-model="activeTab" type="is-boxed">
           <b-tab-item label="Hierarchien" class="hierarchies config-group tile is-vertical is-parent">
@@ -133,7 +127,7 @@
         <div class="content export">
           <button class="button is-medium is-success" @click="showConfig">Konfiguration anzeigen</button>
           <button class="button is-medium is-success" @click="downloadConfig">Konfiguration herunterladen</button>
-          <button class="button is-medium is-success" @click="uploadTreemapDialog = !uploadTreemapDialog">Konfiguration upload</button>
+          <button class="button is-medium is-success" @click="uploadTreemapDialog = !uploadTreemapDialog">Konfiguration hochladen</button>
         </div>
       </div>
     </div>
@@ -181,10 +175,10 @@ export default {
   data () {
     return {
       apiurl: 'https://openspending.org/api/3/cubes/',
-      datapackage: 'a6a16b964a7e784f99adecc47f26318a:berlin_16_17_clean',
+      datapackage: '',
       hasModel: false,
       showTreemap: false,
-      config: {'datapackage': this.datapackage, 'hierarchies': [], 'value': [], 'scale': [], 'filters': {}},
+      config: {'datapackage': '', 'hierarchies': [], 'value': [], 'scale': [], 'filters': {}},
       model: {},
       // Paramters to Staticman
       land: '',
@@ -199,11 +193,12 @@ export default {
     }
   },
   created: function () {
-    if (this.$treemapconfig) {
+    if (this.$treemapconfig !== null) {
       this.config = this.$treemapconfig
       this.datapackage = this.config['datapackage']
       this.getModel()
       this.showTreemap = true
+      console.log('SHOW')
     }
   },
   mounted () {
@@ -358,10 +353,13 @@ export default {
             }
           }
 
-          if (!this.config['value'] && sumAggregate) {
+          if (sumAggregate || !this.config['value']) {
             this.$set(this.config, 'value', [])
             this.$set(this.config, 'datapackage', this.datapackage)
             this.config['value'].push({ 'field': sumAggregate['ref'], 'formatOptions': this.formatOptionsDefault, 'label': sumAggregate['label'] })
+          } else {
+            this.$set(this.config, 'value', [])
+            this.$set(this.config, 'datapackage', this.datapackage)
           }
         })
       }
@@ -491,6 +489,18 @@ a {
 
 .filters-buttons {
    min-height: 100px;
+}
+
+.filter {
+  float: left;
+}
+
+.filters {
+  float: right;
+}
+
+.scales {
+  float: left;
 }
 
 .button-ui {
