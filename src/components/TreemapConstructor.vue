@@ -73,13 +73,13 @@
                 <div class="column" v-if="i > 0" v-for="(scale, i) in config.scale">
                   <div class="card">
                     <div class="card-content">
-                      <b-field label="Label">
+                      <b-field label="Bezeichnung">
                         <b-input v-model="scale.label"></b-input>
                       </b-field>
-                      <b-field label="Description">
+                      <b-field label="Abkürzung">
                         <b-input v-model="scale.description"></b-input>
                       </b-field>
-                      <b-field label="Number">
+                      <b-field label="absolute Zahl">
                         <b-input v-model="scale.number"></b-input>
                       </b-field>
                       <button class="button" @click="removeScale(scale)">Remove</button>
@@ -125,7 +125,6 @@
           </b-tab-item>
         </b-tabs>
         <div class="content export">
-          <button class="button is-medium is-success" @click="showConfig">Konfiguration anzeigen</button>
           <button class="button is-medium is-success" @click="downloadConfig">Konfiguration herunterladen</button>
           <button class="button is-medium is-success" @click="uploadTreemapDialog = !uploadTreemapDialog">Konfiguration hochladen</button>
         </div>
