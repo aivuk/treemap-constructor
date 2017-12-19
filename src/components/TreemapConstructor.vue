@@ -8,7 +8,7 @@
           <a class="blue-button constructor-ui" @click="getModel()">Datensatz laden</a>
         </b-field>
       </div>
-      <a class="finde-id-help" href="/hinzufuegen/help">Wo finde ich die ID?</a>
+      <h2 class="finde-id-help">Wo finde ich die ID?</h2>
       <div class="config" v-if="hasModel && !uploadTreemapDialog">
         <b-tabs v-model="activeTab" type="is-boxed">
           <b-tab-item label="Hierarchien" class="hierarchies config-group tile is-vertical is-parent">
@@ -125,18 +125,18 @@
           </b-tab-item>
         </b-tabs>
         <div class="content export">
-          <button class="button is-medium is-success" @click="downloadConfig">Konfiguration herunterladen</button>
-          <button class="button is-medium is-success" @click="uploadTreemapDialog = !uploadTreemapDialog">Konfiguration hochladen</button>
+          <button class="button green-button is-medium is-success" @click="downloadConfig">Konfiguration herunterladen</button>
+          <button class="button blue-button is-medium is-success" @click="uploadTreemapDialog = !uploadTreemapDialog">Datensatz hinzufügen</button>
         </div>
       </div>
     </div>
     <!-- Upload dialog -->
     <div class="treemap-upload" v-if="uploadTreemapDialog">
-       <b-field label="Level">
+       <b-field label="Ebene">
          <b-select class="btn btn-default dropdown-toggle" v-model="config['level']">
-           <option value="land">Land</option>
-           <option value="kommune">Kommune</option>
            <option value="bund">Bund</option>
+           <option value="land">Bundesland</option>
+           <option value="kommune">Kommune</option>
          </b-select>
        </b-field>
        <b-field label="Land" v-if="config['level'] == 'land' || config['level'] == 'kommune'">
@@ -144,14 +144,14 @@
            <option :value="land.code" :key="land.code" v-for="land in bundesland">{{land.name}}</option>
          </b-select>
        </b-field>
-       <b-field label="Kommune name" v-if="config['level'] == 'kommune'">
+       <b-field label="Name der Kommune / des Bundeslands" v-if="config['level'] == 'kommune'">
          <b-input v-model="config['name']"></b-input>
        </b-field>
-       <b-field label="Text">
+       <b-field label="Füge einen Beschreibungstext hinzu">
          <b-input type="textarea" rows=10 v-model="config['text']"></b-input>
        </b-field>
        <button class="button is-medium is-danger" @click="uploadTreemapDialog = false">Abbrechen</button>
-       <button class="button is-medium is-success" @click="uploadConfig">Konfiguration hochladen</button>
+       <button class="button is-medium is-success" @click="uploadConfig">Datensatz hinzufügen</button>
     </div>
     <!-- End upload dialog -->
     <div class="treemap-preview" v-if="showTreemap">
@@ -208,6 +208,12 @@ export default {
     },
 
     uploadConfig: function () {
+      if (!this.config['name']) {
+        this.config['name'] = this.config['state']
+      }
+      if (!this.config['text']) {
+        this.config['text'] = 'Haushalt'
+      }
       var configToSite = {
         'fields[state]': this.config['state'],
         'fields[name]': this.config['name'],
@@ -217,7 +223,13 @@ export default {
       }
       axios.post('https://staticman.vaz.io/v2/entry/okfde/offenerhaushalt.de/dev/budget',
         stringify(configToSite),
-        {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
+        {headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then((response) => {
+          this.$dialog.alert({
+            title: 'Vielen Dank für Ihre Mitwirkung!',
+            type: 'is-success',
+            message: 'Sie haben ihren Datensatz erfolgreich auf Offenerhaushalt.de hinzugefügt.<p/> Die Daten werden jetzt nochmal überprüft und zeitnah auf die Webseite gestellt.<p/> Bei Fragen oder Anmerkungen schreiben Sie uns unter <a href="mailto:info@offenerhaushalt.de?Subject=Datensatz%20hinzufügen">info@offenerhaushalt.de</a>.'
+          })
+        })
     },
 
     addScale: function () {
